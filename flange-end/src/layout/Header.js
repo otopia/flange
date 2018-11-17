@@ -14,6 +14,7 @@ class Header extends Component {
                         <form className="form-inline">
                             <Link to="/"><button className="btn btn-outline-success" type="button" style={{ "backgroundColor": "#e3f2fd", 'marginLeft': '10px' }}>صفحه اصلی</button></Link>
                             <Link to="/newrequest"><button className="btn btn-outline-success" type="button" style={{ "backgroundColor": "#e3f2fd", 'marginLeft': '10px' }} >ثبت سفارش</button></Link>
+                            <Link to="/confirmfactors"><button className="btn btn-outline-success" type="button" style={{ "backgroundColor": "#e3f2fd", 'marginLeft': '10px' }} >سفارشهای تایید شده </button></Link>
                             <Link to="/about"><button className="btn btn-outline-success" type="button" style={{ "backgroundColor": "#e3f2fd", 'marginLeft': '10px' }}>درباره </button></Link>
                         </form>
                     </div>

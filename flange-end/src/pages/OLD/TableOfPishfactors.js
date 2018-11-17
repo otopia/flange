@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import DetailOfRequest from '../pages/DetailOfRequest';
 import axios from 'axios';
-
-
 class TableOfPishfactor extends Component {
-    reqest_number="";
+    reqest_number = "";
     constructor(props) {
         super(props);
         this.state = {
@@ -13,7 +11,6 @@ class TableOfPishfactor extends Component {
             main_status: "Loading....",
             show_rem_row: [],
             sub_page: 'main',
-            
         };
         this.GetTableOfPishfactor = this.GetTableOfPishfactor.bind(this);
         this.YesFunc = this.YesFunc.bind(this);
@@ -29,7 +26,7 @@ class TableOfPishfactor extends Component {
     async YesFunc(ReqNum) {
         const send_obj = {
             'method': 'get',
-            'url': 'http://localhost/flange-back/public/main/confirm/confirmcancelpishfactor',
+            'url': this.props.server + 'confirm/confirmcancelpishfactor',
             'params': { 'request_code': ReqNum },
         }
         //console.log("start");
@@ -56,7 +53,7 @@ class TableOfPishfactor extends Component {
     async GetTableOfPishfactor() {
         const send_obj = {
             'method': 'get',
-            'url': 'http://localhost/flange-back/public/main/getdata/gettableofpishfactor',
+            'url': this.props.server + 'getdata/gettableofpishfactor',
             'params': { test: 'test' },
         }
         await axios(send_obj)
@@ -97,9 +94,9 @@ class TableOfPishfactor extends Component {
         });
     }
     ShowDetail(req_num) {
-        this.reqest_number=req_num;
+        this.reqest_number = req_num;
         this.setState({
-            sub_page:'detail'
+            sub_page: 'detail'
         });
         //console.log(req_num);
     }
@@ -141,7 +138,7 @@ class TableOfPishfactor extends Component {
                 break;
             }
             case 'detail': {
-              return  (<DetailOfRequest request_code={this.reqest_number} />);
+                return (<DetailOfRequest server={this.props.server} request_code={this.reqest_number} />);
                 break;
             }
             default: {

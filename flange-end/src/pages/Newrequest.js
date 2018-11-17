@@ -65,10 +65,8 @@ class Newrequest extends Component {
         }
         const send_obj = {
             'method': 'get',
-            'url': 'http://localhost/flange-back/public/main/getdata/getkalaname',
-            //'url': 'http://localhost/1/3.php',
+            'url': this.props.server+'getdata/getkalaname',
             'params': params,
-
         }
         axios(send_obj)
             //fetch('http://localhost/1/3.php', {
@@ -84,12 +82,14 @@ class Newrequest extends Component {
     async HandleSubmit() {
         await this.ValidatingForm();
         if (this.state.valid_form === true) {
+            this.state.SendParameters['progress'] =this.props.progress;
             this.setState({
-                fire: 'wait'
+                fire: 'wait',
+                SendParameters: this.state.SendParameters
             });
             const send_obj = {
                 'method': 'get',
-                'url': 'http://localhost/flange-back/public/main/confirm/confirmpishfactor',
+                'url': this.props.server+'confirm/confirmrequest',
                 'params': this.state.SendParameters,
             }
             console.log("start");

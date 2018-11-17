@@ -3,7 +3,6 @@ import axios from 'axios';
 import Select from 'react-select';
 
 class DetailOfRequest extends Component {
-    OrginalSendParameters = {};
     constructor(props) {
         super(props);
         this.state = {
@@ -11,7 +10,7 @@ class DetailOfRequest extends Component {
             Products: 'none',
             SendParameters: {},
         };
-        this.state.SendParameters['detail']={};
+        this.state.SendParameters['detail'] = {};
         this.GetKalaName = this.GetKalaName.bind(this);
         this.GetListOfRow = this.GetListOfRow.bind(this);
         this.SetParameterValue = this.SetParameterValue.bind(this);
@@ -49,12 +48,12 @@ class DetailOfRequest extends Component {
         this.setState({
             SendParameters: this.state.SendParameters,
         });
-       console.log(this.state.SendParameters);
+        console.log(this.state.SendParameters);
     }
     async GetKalaName() {
         const send_obj = {
             'method': 'get',
-            'url': 'http://localhost/flange-back/public/main/getdata/getkalaname',
+            'url': this.props.server + 'getdata/getkalaname',
             'params': { test: 'test' },
         }
         await axios(send_obj)
@@ -69,8 +68,11 @@ class DetailOfRequest extends Component {
     async GetListOfRow() {
         const send_obj = {
             'method': 'get',
-            'url': 'http://localhost/flange-back/public/main/getdata/getdetailofpishfactor',
-            'params': { request_code: this.props.request_code },
+            'url': this.props.server + 'getdata/getdetailofrequest',
+            'params': {
+                request_code: this.props.request_code,
+                progress: this.props.progress
+            },
         }
         await axios(send_obj)
             .then((response) => {
@@ -81,12 +83,11 @@ class DetailOfRequest extends Component {
             })
             .catch((error) => {
             });
-            console.log(this.state.SendParameters);
+        console.log(this.state.SendParameters);
     }
     async HandleSubmit() {
-        //  await this.ValidatingForm();
-        //  if (this.state.valid_form === true) {
         this.state.SendParameters['request_code'] = this.props.request_code;
+        this.state.SendParameters['progress'] =this.props.progress;
         this.setState({
             Submit: 'wait',
             SendParameters: this.state.SendParameters
@@ -94,7 +95,7 @@ class DetailOfRequest extends Component {
         console.log(this.state.SendParameters);
         const send_obj = {
             'method': 'get',
-            'url': 'http://localhost/flange-back/public/main/confirm/confirmfactor',
+            'url': this.props.server + 'confirm/confirmrequest',
             'params': this.state.SendParameters,
         }
         console.log("start");
@@ -102,7 +103,7 @@ class DetailOfRequest extends Component {
             .then((response) => {
                 console.log("stop");
                 console.log(response.data);
-                if (response.data.trim() === "OK") {
+                if (response.data.status.trim() === "OK") {
                     this.setState({
                         Submit: 'pass'
                     });
@@ -110,19 +111,11 @@ class DetailOfRequest extends Component {
             })
             .catch((error) => {
             });
-        //console.log()
-        //  }
-        //alert(this.state.valid_form);
     }
 
     async componentDidMount() {
         await this.GetKalaName();
         await this.GetListOfRow();
-    }
-
-    componentDidUpdate() {
-        // this.counter=0;
-        //     //alert("hi");
     }
     render() {
         //console.log(this.state.SendParameters.detail);
@@ -157,7 +150,7 @@ class DetailOfRequest extends Component {
                                     </td>
                                     <td><input type="text" className="form-control" id={i.row} value={i.qty_value} onChange={(e) => this.SetParameterValue("qty_value", e.target.value, e.target.id)} />
                                     </td>
-                                    <td><GetInventory item={i} setParameter={(kala_inventory) => this.SetParameterValue("kala_inventory", kala_inventory, i.row)} /></td>
+                                    <td><GetInventory server={this.props.server} item={i} setParameter={(kala_inventory) => this.SetParameterValue("kala_inventory", kala_inventory, i.row)} /></td>
                                     <td><button className="btn btn-danger" onClick={() => this.RemRow(i.row)}>X</button>
                                     </td>
                                 </tr>
@@ -207,7 +200,7 @@ class GetInventory extends Component {
         this.setParameter("Loading....");
         const send_obj = {
             'method': 'get',
-            'url': 'http://localhost/flange-back/public/main/getdata/getkalainventory',
+            'url': this.props.server + 'getdata/getkalainventory',
             'params': { kala_id: this.props.item.kala_id },
         }
         await axios(send_obj)
