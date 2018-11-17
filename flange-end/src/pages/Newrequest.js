@@ -2,19 +2,16 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import LoadingButton from '../component/LoadingButton';
-
-let myRef0 = undefined;
-const styles = {
-    textbox: {
-        color: 'blue'
-    }
-}
+// const styles = {
+//     textbox: {
+//         color: 'blue'
+//     }
+// }
 // const options = [
 //     { value: 'chocolate', label: 'Chocolate' },
 //     { value: 'strawberry', label: 'Strawberry' },
 //     { value: 'vanilla', label: 'Vanilla' }
 // ]
-let counter_select = 0;
 class Newrequest extends Component {
 
     constructor(props) {
@@ -27,25 +24,22 @@ class Newrequest extends Component {
             ListOfRow: [],
             NumOfRow: 1,
             KeyOfRow: 0,
-            send_parameters: {},
+            SendParameters: {},
             valid_form: false,
             main_response: 'none',
             fire: 'ready'
-
         };
+        this.state.SendParameters['detail']=[];
         this.GetKalaName = this.GetKalaName.bind(this);
         this.HandleSubmit = this.HandleSubmit.bind(this);
         this.AddRow = this.AddRow.bind(this);
         this.RemRow = this.RemRow.bind(this);
         this.ValidatingForm = this.ValidatingForm.bind(this);
-
     }
     AddRow(obj_of_row) {
-        //counter_select = counter_select + 1;
         this.SetParameterValue("kala_id", "", this.state.KeyOfRow);
         this.SetParameterValue("qty_value", "", this.state.KeyOfRow);
         this.state.ListOfRow.push(obj_of_row);
-
         this.setState({
             KeyOfRow: this.state.KeyOfRow + 1
         });
@@ -56,11 +50,11 @@ class Newrequest extends Component {
         let value = e.target.value;
         const index1 = this.state.ListOfRow.findIndex(item => ((item.key.toString() === value)));
         this.state.ListOfRow.splice(index1, 1);
-        this.state.send_parameters[index1] = undefined;
+        this.state.SendParameters['detail'][index1] = undefined;
         //this.state.send_parameters.kala_id[index1+1]=undefined;
         this.setState({
             ListOfRow: this.state.ListOfRow,
-            send_parameters: this.state.send_parameters
+            SendParameters: this.state.SendParameters
         });
     }
     GetKalaName() {
@@ -88,35 +82,28 @@ class Newrequest extends Component {
             });
     }
     async HandleSubmit() {
-
         await this.ValidatingForm();
         if (this.state.valid_form === true) {
-
             this.setState({
                 fire: 'wait'
             });
             const send_obj = {
                 'method': 'get',
                 'url': 'http://localhost/flange-back/public/main/confirm/confirmpishfactor',
-                'params': this.state.send_parameters,
+                'params': this.state.SendParameters,
             }
-
             console.log("start");
             await axios(send_obj)
                 .then((response) => {
                     console.log("stop");
                     console.log(response.data);
-                    if (response.data.trim() === "OK") {
+                    if (response.data.status.trim() === "OK") {
                         //alert(response.data);
                         this.setState({
                             //main_response: response.data,
                             fire: 'pass'
                         });
-                      
                     }
-
-
-
                 })
                 .catch((error) => {
                 });
@@ -125,15 +112,15 @@ class Newrequest extends Component {
         //alert(this.state.valid_form);
     }
     ValidatingForm() {
-        console.log(this.state.send_parameters);
+        console.log(this.state.SendParameters);
         const re = /^[0-9\b]+$/;
 
         let valid_state = false;
-        for (let item of Object.keys(this.state.send_parameters)) {
+        for (let item of Object.keys(this.state.SendParameters['detail'])) {
             console.log(item);
-            if (this.state.send_parameters[item] !== undefined) {
+            if (this.state.SendParameters['detail'][item] !== undefined) {
                 valid_state = true;
-                let qty = (this.state.send_parameters[item].qty_value);
+                let qty = (this.state.SendParameters['detail'][item].qty_value);
                 (qty === "" || qty === undefined) ? (this.ref_kala_qty[item].innerText = "it's Empty", valid_state = false) : this.ref_kala_qty[item].innerText = "";
                 if (qty !== "" && qty !== undefined) {
                     re.test(qty.trim()) === true ? this.ref_kala_qty[item].innerText = "" : (this.ref_kala_qty[item].innerText = "Error", valid_state = false);
@@ -146,12 +133,12 @@ class Newrequest extends Component {
         console.log(valid_state);
     }
     SetParameterValue(name, value, id) {
-        this.state.send_parameters[id] = { ...this.state.send_parameters[id], [name]: value };
+        this.state.SendParameters['detail'][id] = { ...this.state.SendParameters['detail'][id], [name]: value };
         this.setState({
-            send_parameters: this.state.send_parameters,
+            SendParameters: this.state.SendParameters,
 
         });
-        console.log(this.state.send_parameters);
+        console.log(this.state.SendParameters);
     }
     componentDidMount() {
         this.GetKalaName();
@@ -220,6 +207,7 @@ class Newrequest extends Component {
                 <br />
                 <LoadingButton id="12345" className="btn btn-success" onClick={() => this.ValidatingForm()} loading="Loading..." loaded="Check" />
                 <br />
+
 
             </div >
         );
